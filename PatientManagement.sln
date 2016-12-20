@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientManagement", "PatientManagement\PatientManagement.csproj", "{D1D67ABB-62D0-4D7B-8203-CCF3A17CD20A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectionManager", "ProjectionManager\ProjectionManager.csproj", "{747FD7A1-B4BC-42E8-A89F-9469DD3DB68D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{A0DF4AAA-C6CB-4046-B975-CAAEF7C068F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeedGenerator", "SeedGenerator\SeedGenerator.csproj", "{7AE80393-ADF2-49B7-8007-3470D81C321B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1D67ABB-62D0-4D7B-8203-CCF3A17CD20A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1D67ABB-62D0-4D7B-8203-CCF3A17CD20A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1D67ABB-62D0-4D7B-8203-CCF3A17CD20A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1D67ABB-62D0-4D7B-8203-CCF3A17CD20A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{747FD7A1-B4BC-42E8-A89F-9469DD3DB68D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{747FD7A1-B4BC-42E8-A89F-9469DD3DB68D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{747FD7A1-B4BC-42E8-A89F-9469DD3DB68D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{747FD7A1-B4BC-42E8-A89F-9469DD3DB68D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0DF4AAA-C6CB-4046-B975-CAAEF7C068F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0DF4AAA-C6CB-4046-B975-CAAEF7C068F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0DF4AAA-C6CB-4046-B975-CAAEF7C068F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0DF4AAA-C6CB-4046-B975-CAAEF7C068F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AE80393-ADF2-49B7-8007-3470D81C321B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE80393-ADF2-49B7-8007-3470D81C321B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AE80393-ADF2-49B7-8007-3470D81C321B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AE80393-ADF2-49B7-8007-3470D81C321B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

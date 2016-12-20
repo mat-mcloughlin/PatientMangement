@@ -1,0 +1,104 @@
+﻿@model Explorer.Patient
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../Content/bootstrap.min.css" />
+    <style>
+        .container {
+            width: 1140px;
+            max-width: 100%;
+        }
+
+        .panel {
+            margin-right: 0;
+            margin-left: 0;
+            background-color: #fff;
+            border-color: #ddd;
+            border-width: 1px;
+            border-radius: 4px 4px 0 0;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>Patient View</h1>
+
+                <form class="form-horizontal panel">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Patient Id</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-static">@Model.Id</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Patient Name</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-static">@Model.PatientName</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Ward Number</label>
+                        <div class="col-sm-9">
+                            <p class="form-control-static">@Model.WardNumber</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Transfer</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" data-bind="value: toWard" />
+                        </div>
+                        <div class="col-sm-3">
+                            <button class="btn btn-primary" data-bind="click: transfer">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h4 style="margin-top: 40px;">Events</h4>
+                <div class="list-group" data-bind="foreach: events">
+                    <pre><code style="font-weight: bold;"data-bind="text: eventType"></code><br/><code data-bind="text: data"></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/Content/jquery.min.js" type="text/javascript"></script>
+    <script src="/Content/knockout.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+            var patientId = '@Model.Id';
+
+            var viewModel = {
+                events: ko.observableArray(),
+                toWard: ko.observable(),
+                transfer: function() {
+                }
+            };
+
+            var loadEvents = function () {
+                $.getJSON("/Patient/Events/" + patientId,
+                    function (data) {
+                        viewModel.events.removeAll();
+
+                        $.each(data, function (key, value) {
+                            viewModel.events.push({
+                                eventType: value.eventType,
+                                created: value.created,
+                                data: JSON.stringify(value.data, null, 4)
+                            });
+                        });
+                    });
+            }
+
+            ko.applyBindings(viewModel);
+            loadEvents();
+
+        });
+    </script>
+</body>
+</html>

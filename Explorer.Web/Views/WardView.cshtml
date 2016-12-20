@@ -1,0 +1,42 @@
+﻿@model Explorer.WardView
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../Content/bootstrap.min.css" />
+    <style>
+        .container {
+            width: 1140px;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ward View</h1>
+
+        @foreach (var ward in Model.Wards)
+        {
+            <h3>Ward Number: @ward.WardNumber</h3>
+
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th>Id</th>
+                    <th>Patient Name</th>
+                    <th>AgeInYears</th>
+                </tr>
+
+                @foreach (var patient in ward.Patients)
+                {
+                    <tr>
+                        <th><a href="Patient/@patient.Id">@patient.Id</a></th>
+                        <th>@patient.PatientName</th>
+                        <th>@patient.AgeInYears</th>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+</body>
+</html>
