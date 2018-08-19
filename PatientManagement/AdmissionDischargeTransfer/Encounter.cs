@@ -13,7 +13,7 @@ namespace PatientManagement.AdmissionDischargeTransfer
 
         bool _currentlyAdmitted;
 
-        public Encounter(Guid patientId, string patientName, int ageInYears, int wardNumber)
+        public Encounter(String patientId, string patientName, int ageInYears, int wardNumber)
             : this()
         {
             Raise(new PatientAdmitted(patientId, patientName, ageInYears, wardNumber));

@@ -4,11 +4,11 @@ namespace PatientManagement.AdmissionDischargeTransfer
 {
     public class PatientDischarged
     {
-        public PatientDischarged(Guid patientId)
+        public PatientDischarged(String patientId)
         {
             PatientId = patientId;
         }
 
-        public Guid PatientId { get; }
+        public String PatientId { get; }
     }
 }

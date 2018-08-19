@@ -11,7 +11,7 @@ namespace PatientManagement.Framework
 
         void Apply(object e);
 
-        Guid Id { get; }
+        String Id { get; }
 
         int Version { get; }
     }

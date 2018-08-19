@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using EventStore.ClientAPI;
 using Newtonsoft.Json;
+using ProjectionManager;
 
 namespace Explorer
 {

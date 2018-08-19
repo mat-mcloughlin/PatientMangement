@@ -9,7 +9,7 @@ namespace PatientManagement.Framework
 
         readonly List<object> _events = new List<object>();
 
-        public Guid Id { get; protected set; }
+        public String Id { get; protected set; }
 
         public int Version { get; protected set; } = -1;
 

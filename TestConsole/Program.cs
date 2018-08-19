@@ -19,7 +19,7 @@ namespace TestConsole
         {
             var dispatcher = await SetupDispatcher();
 
-            var patientId = Guid.NewGuid();
+            var patientId = Guid.NewGuid().ToString();
 
             var admitPatient = new AdmitPatient(patientId, "Tony Ferguson", 32, DateTime.UtcNow, 10);
             await dispatcher.Dispatch(admitPatient);

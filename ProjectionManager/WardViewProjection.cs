@@ -54,7 +54,7 @@ namespace ProjectionManager
 
     public class Patient
     {
-        public Guid Id { get; set; }
+        public String Id { get; set; }
 
         public int WardNumber { get; set; }
 

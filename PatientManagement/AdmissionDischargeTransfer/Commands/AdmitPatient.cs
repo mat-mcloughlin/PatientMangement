@@ -4,7 +4,7 @@ namespace PatientManagement.AdmissionDischargeTransfer.Commands
 {
     public class AdmitPatient
     {
-        public AdmitPatient(Guid patientId, string patientName, int ageInYears, DateTime timeOfAdmission, int wardNumber)
+        public AdmitPatient(String patientId, string patientName, int ageInYears, DateTime timeOfAdmission, int wardNumber)
         {
             PatientId = patientId;
             PatientName = patientName;
@@ -13,7 +13,7 @@ namespace PatientManagement.AdmissionDischargeTransfer.Commands
             WardNumber = wardNumber;
         }
 
-        public Guid PatientId { get; }
+        public String PatientId { get; }
 
         public string PatientName { get; }
 

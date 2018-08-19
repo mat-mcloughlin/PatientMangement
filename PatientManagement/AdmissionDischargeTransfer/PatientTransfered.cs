@@ -4,13 +4,13 @@ namespace PatientManagement.AdmissionDischargeTransfer
 {
     public class PatientTransfered
     {
-        public PatientTransfered(Guid patientId, int wardNumber)
+        public PatientTransfered(String patientId, int wardNumber)
         {
             PatientId = patientId;
             WardNumber = wardNumber;
         }
 
-        public Guid PatientId { get; }
+        public String PatientId { get; }
 
         public int WardNumber { get; }
     }

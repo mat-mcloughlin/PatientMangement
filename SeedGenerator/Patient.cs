@@ -15,7 +15,7 @@ namespace SeedGenerator
             {
                 list.Add(new Patient
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = i % 2 == 0 ? NameGenerator.Generate(Gender.Female) : NameGenerator.Generate(Gender.Male),
                     BirthDate = DateTime.UtcNow.AddDays(dateRandom.Next(25550) * -1).Date
                 });
@@ -24,7 +24,7 @@ namespace SeedGenerator
             return list;
         }
 
-        public Guid Id { get; set; }
+        public String Id { get; set; }
 
         public DateTime BirthDate { get; set; }
 

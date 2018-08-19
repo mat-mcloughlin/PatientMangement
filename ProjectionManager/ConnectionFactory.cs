@@ -1,9 +1,11 @@
-﻿using Raven.Client;
-using Raven.Client.Document;
+﻿using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
+using Raven.Client.ServerWide;
+using Raven.Client.ServerWide.Operations;
 
 namespace ProjectionManager
 {
-    internal class ConnectionFactory
+    public class ConnectionFactory
     {
         private readonly IDocumentStore _store;
 
@@ -11,11 +13,19 @@ namespace ProjectionManager
         {
             _store = new DocumentStore
             {
-                Url = "http://localhost:8080/",
-                DefaultDatabase = database
+                Urls = new[] { "http://localhost:8080/" },
+                Database = database
             };
-
             _store.Initialize();
+
+            try
+            {
+                _store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(database)));
+            }
+            catch (Raven.Client.Exceptions.ConcurrencyException e) when (e.Message == $"Database '{database}' already exists!")
+            {
+                // Database already created, swallow the exception              
+            }
         }
 
         public IDocumentSession Connect()
