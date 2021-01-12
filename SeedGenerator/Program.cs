@@ -12,7 +12,7 @@ namespace SeedGenerator
     internal class Program
     {
         static readonly Random Random = new Random();
-        
+
         public static void Main(string[] args)
         {
             AsyncMain().GetAwaiter().GetResult();
@@ -27,9 +27,9 @@ namespace SeedGenerator
             await AdmitPatients(listOfPatients, dispatcher);
             await TransferPatients(listOfPatients, dispatcher);
             await DischargeAllPatients(listOfPatients, dispatcher);
-            
+
             listOfPatients = Patient.Generate(20);
-            
+
             await AdmitPatients(listOfPatients, dispatcher);
             await TransferPatients(listOfPatients, dispatcher);
             await DischargePatients(listOfPatients, dispatcher);
@@ -91,8 +91,11 @@ namespace SeedGenerator
 
         private static async Task<Dispatcher> SetupDispatcher()
         {
+            var connectionSettings = ConnectionSettings.Create()
+                .DisableTls();
+
             var eventStoreConnection = EventStoreConnection.Create(
-                ConnectionSettings.Default,
+                connectionSettings,
                 new IPEndPoint(IPAddress.Loopback, 1113));
 
             await eventStoreConnection.ConnectAsync();

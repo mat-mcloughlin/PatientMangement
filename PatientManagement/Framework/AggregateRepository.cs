@@ -53,7 +53,7 @@ namespace PatientManagement.Framework
 
         async Task<List<object>> GetEvents(string streamName)
         {
-            var sliceStart = StreamPosition.Start;
+            long sliceStart = StreamPosition.Start;
             var deserializedEvents = new List<object>();
             StreamEventsSlice slice;
 

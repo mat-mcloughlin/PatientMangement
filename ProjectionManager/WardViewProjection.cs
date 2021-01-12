@@ -1,51 +1,43 @@
 ﻿using System;
+using MongoDB.Driver;
 using PatientManagement.AdmissionDischargeTransfer;
 
 namespace ProjectionManager
 {
     internal class WardViewProjection : Projection
     {
-        public WardViewProjection(ConnectionFactory connectionFactory)
+        public WardViewProjection(IMongoDatabase database)
         {
+            var collection = database.GetCollection<Patient>("WardView");
+
             When<PatientAdmitted>(e =>
             {
-                using (var session = connectionFactory.Connect())
+                collection.InsertOne(new Patient
                 {
-                    session.Store(new Patient
-                    {
-                        Id = e.PatientId,
-                        WardNumber = e.WardNumber,
-                        PatientName = e.PatientName,
-                        AgeInYears = e.AgeInYears
-                    });
-
-                    session.SaveChanges();
-                }
+                    Id = e.PatientId,
+                    WardNumber = e.WardNumber,
+                    PatientName = e.PatientName,
+                    AgeInYears = e.AgeInYears
+                });
 
                 Console.WriteLine($"Recording Patient Admission: {e.PatientName}");
             });
 
             When<PatientTransfered>(e =>
             {
-                using (var session = connectionFactory.Connect())
-                {
-                    var patient = session.Load<Patient>(e.PatientId);
-                    patient.WardNumber = e.WardNumber;
-                    session.SaveChanges();
-                }
+                var filter = Builders<Patient>.Filter.Eq(x => x.Id, e.PatientId);
+                var update = Builders<Patient>.Update.Set(a => a.WardNumber, e.WardNumber);
+
+                collection.UpdateOneAsync(filter, update);
 
                 Console.WriteLine($"Recording Patient Transfer: {e.PatientId}");
             });
 
             When<PatientDischarged>(e =>
             {
-                using (var session = connectionFactory.Connect())
-                {
-                    var patient = session.Load<Patient>(e.PatientId);
-                    session.Delete(patient);
+                var filter = Builders<Patient>.Filter.Eq(x => x.Id, e.PatientId);
 
-                    session.SaveChanges();
-                }
+                collection.FindOneAndDelete(filter);
 
                 Console.WriteLine($"Recording Patient Discharged: {e.PatientId}");
             });

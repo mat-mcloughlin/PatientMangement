@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+
+  eventstore:
+    container_name: eventstore.PatientManagement
+    image: eventstore/eventstore:latest
+    ports:
+      - '2113:2113'
+      - '1113:1113'
+    environment:
+      EVENTSTORE_INSECURE: 'true'
+      EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP: 'true'
+      EVENTSTORE_ENABLE_EXTERNAL_TCP: 'true'
+
+  mongo:
+    container_name: mongo.PatientManagement
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_DATABASE=PatientManagement
+    ports:
+      - "27017-27019:27017-27019"
