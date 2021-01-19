@@ -43,14 +43,11 @@ namespace ProjectionManager
                 LiveProcessingStarted(projection));
         }
 
-        Action<EventStoreCatchUpSubscription> LiveProcessingStarted(IProjection projection)
-        {
-            return s => Console.WriteLine($"Projection {projection.GetType().Name} has caught up, now processing live");
-        }
+        Action<EventStoreCatchUpSubscription> LiveProcessingStarted(IProjection projection) =>
+            _ => Console.WriteLine($"Projection {projection.GetType().Name} has caught up, now processing live");
 
-        Action<EventStoreCatchUpSubscription, ResolvedEvent> EventAppeared(IProjection projection)
-        {
-            return (s, e) =>
+        Action<EventStoreCatchUpSubscription, ResolvedEvent> EventAppeared(IProjection projection) =>
+            (_, e) =>
             {
                 if (!projection.CanHandle(e.Event.EventType))
                 {
@@ -62,7 +59,6 @@ namespace ProjectionManager
 
                 UpdatePosition(projection.GetType(), e.OriginalPosition.Value);
             };
-        }
 
         Position? GetPosition(Type projection)
         {

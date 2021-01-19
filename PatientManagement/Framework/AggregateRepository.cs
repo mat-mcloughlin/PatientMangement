@@ -11,10 +11,7 @@ namespace PatientManagement.Framework
     {
         readonly IEventStoreConnection _connection;
 
-        public AggregateRepository(IEventStoreConnection connection)
-        {
-            _connection = connection;
-        }
+        public AggregateRepository(IEventStoreConnection connection) => _connection = connection;
 
         public async Task<T> Get<T>(Guid id) where T : IAggregateRoot
         {
@@ -36,20 +33,15 @@ namespace PatientManagement.Framework
             return _connection.AppendToStreamAsync(StreamName(aggregateRoot.GetType(), aggregateRoot.Id), aggregateRoot.Version, events);
         }
 
-        static EventData ToEventData(object e)
-        {
-            return new EventData(
+        static EventData ToEventData(object e) =>
+            new EventData(
                 Guid.NewGuid(),
                 e.GetType().Name,
                 true,
                 e.Serialize(),
                 null);
-        }
 
-        static string StreamName(Type aggregate, Guid id)
-        {
-            return $"{aggregate.Name}+{id}";
-        }
+        static string StreamName(Type aggregate, Guid id) => $"{aggregate.Name}+{id}";
 
         async Task<List<object>> GetEvents(string streamName)
         {

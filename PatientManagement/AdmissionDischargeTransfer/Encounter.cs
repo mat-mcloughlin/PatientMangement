@@ -14,16 +14,14 @@ namespace PatientManagement.AdmissionDischargeTransfer
         bool _currentlyAdmitted;
 
         public Encounter(Guid patientId, string patientName, int ageInYears, int wardNumber)
-            : this()
-        {
+            : this() =>
             Raise(new PatientAdmitted(patientId, patientName, ageInYears, wardNumber));
-        }
 
         private Encounter()
         {
             Register<PatientAdmitted>(When);
             Register<PatientDischarged>(When);
-            Register<PatientTransfered>(When);
+            Register<PatientTransferred>(When);
         }
 
         public void DischargePatient()
@@ -42,10 +40,7 @@ namespace PatientManagement.AdmissionDischargeTransfer
             _ward = e.WardNumber;
         }
 
-        private void When(PatientDischarged e)
-        {
-            _currentlyAdmitted = false;
-        }
+        private void When(PatientDischarged e) => _currentlyAdmitted = false;
 
         public void CheckPatientIsAdmitted()
         {
@@ -59,12 +54,9 @@ namespace PatientManagement.AdmissionDischargeTransfer
         {
             CheckPatientIsAdmitted();
 
-            Raise(new PatientTransfered(Id, wardNumber));
+            Raise(new PatientTransferred(Id, wardNumber));
         }
 
-        private void When(PatientTransfered e)
-        {
-            _ward = e.WardNumber;
-        }
+        private void When(PatientTransferred e) => _ward = e.WardNumber;
     }
 }

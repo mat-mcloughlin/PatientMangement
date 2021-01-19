@@ -4,8 +4,8 @@ namespace ProjectionManager
 {
     class EventHandler
     {
-        public string EventType { get; set; }
+        public string EventType { get; init; }
 
-        public Action<object> Handler { get; set; }
+        public Action<object> Handler { get; init; }
     }
 }

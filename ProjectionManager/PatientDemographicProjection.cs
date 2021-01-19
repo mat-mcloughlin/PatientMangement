@@ -27,16 +27,16 @@ namespace ProjectionManager
 
     public class RangeLookup
     {
-        static readonly List<RangeLookup> Ranges = new List<RangeLookup>
+        static readonly List<RangeLookup> Ranges = new()
         {
-            new RangeLookup {Name = "0 - 10", Min = 0, Max = 10},
-            new RangeLookup {Name = "11 - 20", Min = 11, Max = 20},
-            new RangeLookup {Name = "21 - 30", Min = 21, Max = 30},
-            new RangeLookup {Name = "31 - 40", Min = 31, Max = 40},
-            new RangeLookup {Name = "41 - 50", Min = 41, Max = 50},
-            new RangeLookup {Name = "51 - 60", Min = 51, Max = 60},
-            new RangeLookup {Name = "61 - 70", Min = 61, Max = 70},
-            new RangeLookup {Name = "71+", Min = 71, Max = int.MaxValue}
+            new() {Name = "0 - 10", Min = 0, Max = 10},
+            new() {Name = "11 - 20", Min = 11, Max = 20},
+            new() {Name = "21 - 30", Min = 21, Max = 30},
+            new() {Name = "31 - 40", Min = 31, Max = 40},
+            new() {Name = "41 - 50", Min = 41, Max = 50},
+            new() {Name = "51 - 60", Min = 51, Max = 60},
+            new() {Name = "61 - 70", Min = 61, Max = 70},
+            new() {Name = "71+", Min = 71, Max = int.MaxValue}
         };
 
         public string Name { get; set; }

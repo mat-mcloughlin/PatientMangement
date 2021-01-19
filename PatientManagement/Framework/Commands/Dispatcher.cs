@@ -6,10 +6,7 @@ namespace PatientManagement.Framework.Commands
     {
         private readonly CommandHandlerMap _map;
 
-        public Dispatcher(CommandHandlerMap map)
-        {
-            _map = map;
-        }
+        public Dispatcher(CommandHandlerMap map) => _map = map;
 
         public Task Dispatch(object command)
         {

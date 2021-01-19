@@ -23,7 +23,7 @@ namespace ProjectionManager
                 Console.WriteLine($"Recording Patient Admission: {e.PatientName}");
             });
 
-            When<PatientTransfered>(e =>
+            When<PatientTransferred>(e =>
             {
                 var filter = Builders<Patient>.Filter.Eq(x => x.Id, e.PatientId);
                 var update = Builders<Patient>.Update.Set(a => a.WardNumber, e.WardNumber);

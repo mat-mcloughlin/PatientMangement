@@ -13,12 +13,7 @@ namespace SeedGenerator
     {
         static readonly Random Random = new Random();
 
-        public static void Main(string[] args)
-        {
-            AsyncMain().GetAwaiter().GetResult();
-        }
-
-        static async Task AsyncMain()
+        public static async Task Main(string[] args)
         {
             var listOfPatients = Patient.Generate(400);
 
