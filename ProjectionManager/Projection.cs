@@ -6,12 +6,9 @@ namespace ProjectionManager
 {
     class Projection : IProjection
     {
-        readonly List<EventHandler> _handlers = new List<EventHandler>();
+        readonly List<EventHandler> _handlers = new();
 
-        protected void When<T>(Action<T> when)
-        {
-            _handlers.Add(new EventHandler { EventType = typeof(T).Name, Handler = e => when((T)e) });
-        }
+        protected void When<T>(Action<T> when) => _handlers.Add(new EventHandler { EventType = typeof(T).Name, Handler = e => when((T)e) });
 
         void IProjection.Handle(string eventType, object e)
         {
@@ -21,9 +18,6 @@ namespace ProjectionManager
                 .ForEach(h => h.Handler(e));
         }
 
-        bool IProjection.CanHandle(string eventType)
-        {
-            return _handlers.Any(h => h.EventType == eventType);
-        }
+        bool IProjection.CanHandle(string eventType) => _handlers.Any(h => h.EventType == eventType);
     }
 }

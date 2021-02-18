@@ -10,12 +10,7 @@ namespace TestConsole
 {
     class Program
     {
-        static void Main()
-        {
-            AsyncMain().GetAwaiter().GetResult();
-        }
-
-        static async Task AsyncMain()
+        static async Task Main()
         {
             var dispatcher = await SetupDispatcher();
 
@@ -49,7 +44,6 @@ namespace TestConsole
             var commandHandlerMap = new CommandHandlerMap(new Handlers(repository));
 
             return new Dispatcher(commandHandlerMap);
-
         }
     }
 }

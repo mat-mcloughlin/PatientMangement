@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EventStore.ClientAPI;
+using MongoDB.Driver;
 using PatientManagement.Framework.Helpers;
 
 namespace ProjectionManager
@@ -11,16 +12,16 @@ namespace ProjectionManager
 
         readonly List<IProjection> _projections;
 
-        readonly ConnectionFactory _connectionFactory;
+        readonly IMongoCollection<ProjectionState> _collection;
 
         public ProjectionManager(
             IEventStoreConnection eventStoreConnection,
-            ConnectionFactory connectionFactory,
+            IMongoDatabase database,
             List<IProjection> projections)
         {
             _projections = projections;
             _eventStoreConnection = eventStoreConnection;
-            _connectionFactory = connectionFactory;
+            _collection = database.GetCollection<ProjectionState>("ProjectionState");
         }
 
         public void Start()
@@ -42,14 +43,11 @@ namespace ProjectionManager
                 LiveProcessingStarted(projection));
         }
 
-        Action<EventStoreCatchUpSubscription> LiveProcessingStarted(IProjection projection)
-        {
-            return s => Console.WriteLine($"Projection {projection.GetType().Name} has caught up, now processing live");
-        }
+        Action<EventStoreCatchUpSubscription> LiveProcessingStarted(IProjection projection) =>
+            _ => Console.WriteLine($"Projection {projection.GetType().Name} has caught up, now processing live");
 
-        Action<EventStoreCatchUpSubscription, ResolvedEvent> EventAppeared(IProjection projection)
-        {
-            return (s, e) =>
+        Action<EventStoreCatchUpSubscription, ResolvedEvent> EventAppeared(IProjection projection) =>
+            (_, e) =>
             {
                 if (!projection.CanHandle(e.Event.EventType))
                 {
@@ -61,46 +59,29 @@ namespace ProjectionManager
 
                 UpdatePosition(projection.GetType(), e.OriginalPosition.Value);
             };
-        }
 
         Position? GetPosition(Type projection)
         {
-            using (var session = _connectionFactory.Connect())
+            var filter = Builders<ProjectionState>.Filter.Eq(x => x.Id, projection.Name);
+
+            var projectionState = _collection.Find(filter).FirstOrDefault();
+
+            if (projectionState == null)
             {
-                var state = session.Load<ProjectionState>(projection.Name);
-
-                if (state == null)
-                {
-                    return null;
-                }
-
-                return new Position(state.CommitPosition, state.PreparePosition);
+                return null;
             }
+
+            return new Position(projectionState.CommitPosition, projectionState.PreparePosition);
         }
 
         void UpdatePosition(Type projection, Position position)
         {
-            using (var session = _connectionFactory.Connect())
-            {
-                var state = session.Load<ProjectionState>(projection.Name);
+            var filter = Builders<ProjectionState>.Filter.Eq(x => x.Id, projection.Name);
+            var update = Builders<ProjectionState>.Update.Set(x => x.CommitPosition, position.CommitPosition)
+                .Set(x => x.PreparePosition, position.PreparePosition);
+            var options = new UpdateOptions {IsUpsert = true};
 
-                if (state == null)
-                {
-                    session.Store(new ProjectionState
-                    {
-                        Id = projection.Name,
-                        CommitPosition = position.CommitPosition,
-                        PreparePosition = position.PreparePosition
-                    });
-                }
-                else
-                {
-                    state.CommitPosition = position.CommitPosition;
-                    state.PreparePosition = position.PreparePosition;
-                }
-
-                session.SaveChanges();
-            }
+            _collection.UpdateOne(filter, update, options);
         }
     }
 

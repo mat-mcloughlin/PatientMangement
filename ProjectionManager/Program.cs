@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
+using MongoDB.Driver;
 
 namespace ProjectionManager
 {
@@ -12,17 +13,18 @@ namespace ProjectionManager
         {
             var eventStoreConnection = GetEventStoreConnection();
 
-            var connectionFactory = new ConnectionFactory("PatientManagement");
+            var mongoClient = new MongoClient("mongodb://localhost");
+            var mongoDatabase = mongoClient.GetDatabase("PatientManagement");
 
             var projections = new List<IProjection>
             {
-                new WardViewProjection(connectionFactory),
-                new PatientDemographicProjection(connectionFactory)
+                new WardViewProjection(mongoDatabase),
+                new PatientDemographicProjection(mongoDatabase)
             };
 
             var projectionManager = new ProjectionManager(
                 eventStoreConnection,
-                connectionFactory,
+                mongoDatabase,
                 projections);
 
             projectionManager.Start();
@@ -34,7 +36,8 @@ namespace ProjectionManager
         static IEventStoreConnection GetEventStoreConnection()
         {
             ConnectionSettings settings = ConnectionSettings.Create()
-                .SetDefaultUserCredentials(new UserCredentials("admin", "changeit"));
+                .SetDefaultUserCredentials(new UserCredentials("admin", "changeit"))
+                .DisableTls();
 
             var eventStoreConnection = EventStoreConnection.Create(
                 settings,

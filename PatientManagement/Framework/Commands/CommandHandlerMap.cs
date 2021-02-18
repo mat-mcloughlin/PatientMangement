@@ -7,7 +7,7 @@ namespace PatientManagement.Framework.Commands
 {
     public class CommandHandlerMap
     {
-        private readonly Dictionary<string, Func<object, Task>> _handlers = new Dictionary<string, Func<object, Task>>();
+        private readonly Dictionary<string, Func<object, Task>> _handlers = new();
 
         public CommandHandlerMap(params CommandHandler[] commandHandlers)
         {
@@ -17,9 +17,6 @@ namespace PatientManagement.Framework.Commands
             }
         }
 
-        public Func<object, Task> Get(object command)
-        {
-            return _handlers[command.GetType().Name];
-        }
+        public Func<object, Task> Get(object command)=> _handlers[command.GetType().Name];
     }
 }
