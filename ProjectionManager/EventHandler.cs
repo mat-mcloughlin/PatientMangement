@@ -1,11 +1,8 @@
 ﻿using System;
 
-namespace ProjectionManager
-{
-    class EventHandler
-    {
-        public string EventType { get; set; } = default!;
+namespace ProjectionManager;
 
-        public Action<object> Handler { get; set; } = default!;
-    }
-}
+record EventHandler(
+    string EventType,
+    Action<object> Handler
+);

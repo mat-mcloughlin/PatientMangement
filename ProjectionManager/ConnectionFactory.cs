@@ -1,26 +1,25 @@
 ﻿using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 
-namespace ProjectionManager
+namespace ProjectionManager;
+
+internal class ConnectionFactory
 {
-    internal class ConnectionFactory
+    private readonly IDocumentStore _store;
+
+    public ConnectionFactory(string database)
     {
-        private readonly IDocumentStore _store;
-
-        public ConnectionFactory(string database)
+        _store = new DocumentStore
         {
-            _store = new DocumentStore
-            {
-                Urls = new [] { "http://localhost:8080/" },
-                Database = database
-            };
+            Urls = new [] { "http://localhost:8080/" },
+            Database = database
+        };
 
-            _store.Initialize();
-        }
+        _store.Initialize();
+    }
 
-        public IDocumentSession Connect()
-        {
-            return _store.OpenSession();
-        }
+    public IDocumentSession Connect()
+    {
+        return _store.OpenSession();
     }
 }

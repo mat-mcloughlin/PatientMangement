@@ -1,9 +1,8 @@
-﻿namespace ProjectionManager
-{
-    interface IProjection
-    {
-        bool CanHandle(string eventType);
+﻿namespace ProjectionManager;
 
-        void Handle(string eventType, object e);
-    }
+interface IProjection
+{
+    bool CanHandle(string eventType);
+
+    void Handle(string eventType, object e);
 }

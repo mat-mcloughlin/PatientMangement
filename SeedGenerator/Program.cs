@@ -35,7 +35,7 @@ async Task DischargePatients(IEnumerable<Patient> listOfPatients, Dispatcher dis
             await dispatcher.Dispatch(new DischargePatient(patient.Id));
         }
 
-        Console.WriteLine("Discharging: " + patient.Name);
+        Console.WriteLine($"Discharging: {patient.Name}");
     }
 }
 
@@ -45,7 +45,7 @@ async Task DischargeAllPatients(IEnumerable<Patient> listOfPatients, Dispatcher 
     {
         await dispatcher.Dispatch(new DischargePatient(patient.Id));
 
-        Console.WriteLine("Discharging: " + patient.Name);
+        Console.WriteLine($"Discharging: {patient.Name}");
     }
 }
 
@@ -59,7 +59,7 @@ async Task TransferPatients(List<Patient> listOfPatients, Dispatcher dispatcher)
             if (!transfer) continue;
             
             await dispatcher.Dispatch(new TransferPatient(patient.Id, Ward.Get()));
-            Console.WriteLine("Transfering: " + patient.Name);
+            Console.WriteLine($"Transferring: {patient.Name}");
         }
     }
 }
@@ -74,7 +74,7 @@ async Task AdmitPatients(IEnumerable<Patient> listOfPatients, Dispatcher dispatc
             patient.Age,
             DateTime.UtcNow,
             Ward.Get()));
-        Console.WriteLine("Admitting: " + patient.Name);
+        Console.WriteLine($"Admitting: {patient.Name}");
     }
 }
 

@@ -1,65 +1,64 @@
 ﻿using System;
 using PatientManagement.AdmissionDischargeTransfer;
 
-namespace ProjectionManager
+namespace ProjectionManager;
+
+internal class WardViewProjection : Projection
 {
-    internal class WardViewProjection : Projection
+    public WardViewProjection(ConnectionFactory connectionFactory)
     {
-        public WardViewProjection(ConnectionFactory connectionFactory)
+        When<PatientAdmitted>(e =>
         {
-            When<PatientAdmitted>(e =>
+            using (var session = connectionFactory.Connect())
             {
-                using (var session = connectionFactory.Connect())
+                session.Store(new Patient
                 {
-                    session.Store(new Patient
-                    {
-                        Id = e.PatientId,
-                        WardNumber = e.WardNumber,
-                        PatientName = e.PatientName,
-                        AgeInYears = e.AgeInYears
-                    });
+                    Id = e.PatientId,
+                    WardNumber = e.WardNumber,
+                    PatientName = e.PatientName,
+                    AgeInYears = e.AgeInYears
+                });
 
-                    session.SaveChanges();
-                }
+                session.SaveChanges();
+            }
 
-                Console.WriteLine($"Recording Patient Admission: {e.PatientName}");
-            });
+            Console.WriteLine($"Recording Patient Admission: {e.PatientName}");
+        });
 
-            When<PatientTransfered>(e =>
+        When<PatientTransfered>(e =>
+        {
+            using (var session = connectionFactory.Connect())
             {
-                using (var session = connectionFactory.Connect())
-                {
-                    var patient = session.Load<Patient>(e.PatientId.ToString());
-                    patient.WardNumber = e.WardNumber;
-                    session.SaveChanges();
-                }
+                var patient = session.Load<Patient>(e.PatientId.ToString());
+                patient.WardNumber = e.WardNumber;
+                session.SaveChanges();
+            }
 
-                Console.WriteLine($"Recording Patient Transfer: {e.PatientId}");
-            });
+            Console.WriteLine($"Recording Patient Transfer: {e.PatientId}");
+        });
 
-            When<PatientDischarged>(e =>
+        When<PatientDischarged>(e =>
+        {
+            using (var session = connectionFactory.Connect())
             {
-                using (var session = connectionFactory.Connect())
-                {
-                    var patient = session.Load<Patient>(e.PatientId.ToString());
-                    session.Delete(patient);
+                var patient = session.Load<Patient>(e.PatientId.ToString());
+                session.Delete(patient);
 
-                    session.SaveChanges();
-                }
+                session.SaveChanges();
+            }
 
-                Console.WriteLine($"Recording Patient Discharged: {e.PatientId}");
-            });
-        }
+            Console.WriteLine($"Recording Patient Discharged: {e.PatientId}");
+        });
     }
+}
 
-    public class Patient
-    {
-        public Guid Id { get; set; }
+public class Patient
+{
+    public Guid Id { get; set; }
 
-        public int WardNumber { get; set; }
+    public int WardNumber { get; set; }
 
-        public string PatientName { get; set; } = default!;
+    public string PatientName { get; set; } = default!;
 
-        public int AgeInYears { get; set; }
-    }
+    public int AgeInYears { get; set; }
 }
