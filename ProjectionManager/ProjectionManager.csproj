@@ -17,13 +17,4 @@
     <ProjectReference Include="..\PatientManagement\PatientManagement.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="C:\Users\oskar\.nuget\packages\ravendb.client\5.3.0\contentFiles\any\any\libzstd.arm.32.so" />
-    <None Remove="C:\Users\oskar\.nuget\packages\ravendb.client\5.3.0\contentFiles\any\any\libzstd.arm.64.so" />
-    <None Remove="C:\Users\oskar\.nuget\packages\ravendb.client\5.3.0\contentFiles\any\any\libzstd.linux.x64.so" />
-    <None Remove="C:\Users\oskar\.nuget\packages\ravendb.client\5.3.0\contentFiles\any\any\libzstd.mac.x64.dylib" />
-    <None Remove="C:\Users\oskar\.nuget\packages\ravendb.client\5.3.0\contentFiles\any\any\libzstd.win.x64.dll" />
-    <None Remove="C:\Users\oskar\.nuget\packages\ravendb.client\5.3.0\contentFiles\any\any\libzstd.win.x86.dll" />
-  </ItemGroup>
-
 </Project>
