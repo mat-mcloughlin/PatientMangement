@@ -1,65 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D1D67ABB-62D0-4D7B-8203-CCF3A17CD20A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>PatientManagement</RootNamespace>
-    <AssemblyName>PatientManagement</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Ensure.That, Version=5.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Ensure.That.5.0.0\lib\net45\Ensure.That.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="EventStore.ClientAPI">
-      <HintPath>..\packages\EventStore.Client.3.9.4\lib\net40\EventStore.ClientAPI.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Ensure.That" Version="10.1.0" />
+    <PackageReference Include="EventStore.Client" Version="21.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AdmissionDischargeTransfer\Commands\AdmitPatient.cs" />
-    <Compile Include="AdmissionDischargeTransfer\Commands\Handlers.cs" />
-    <Compile Include="AdmissionDischargeTransfer\Commands\DischargePatient.cs" />
-    <Compile Include="AdmissionDischargeTransfer\Commands\TransferPatient.cs" />
-    <Compile Include="AdmissionDischargeTransfer\Encounter.cs" />
-    <Compile Include="AdmissionDischargeTransfer\PatientAdmitted.cs" />
-    <Compile Include="AdmissionDischargeTransfer\PatientDischarged.cs" />
-    <Compile Include="AdmissionDischargeTransfer\PatientTransfered.cs" />
-    <Compile Include="Framework\AggregateRepository.cs" />
-    <Compile Include="Framework\AggregateRoot.cs" />
-    <Compile Include="Framework\Commands\CommandHandler.cs" />
-    <Compile Include="Framework\Commands\CommandHandlerMap.cs" />
-    <Compile Include="Framework\Commands\Dispatcher.cs" />
-    <Compile Include="Framework\DomainException.cs" />
-    <Compile Include="Framework\Helpers\EventStoreHelpers.cs" />
-    <Compile Include="Framework\IAggregateRoot.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

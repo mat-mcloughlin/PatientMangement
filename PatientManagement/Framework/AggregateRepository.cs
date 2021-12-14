@@ -18,7 +18,7 @@ namespace PatientManagement.Framework
 
         public async Task<T> Get<T>(Guid id) where T : IAggregateRoot
         {
-            var aggregateRoot = (T)Activator.CreateInstance(typeof(T), true);
+            var aggregateRoot = (T)Activator.CreateInstance(typeof(T), true)!;
             var events = await GetEvents(StreamName(typeof(T), id));
 
             events.ForEach(aggregateRoot.Apply);
@@ -53,7 +53,7 @@ namespace PatientManagement.Framework
 
         async Task<List<object>> GetEvents(string streamName)
         {
-            var sliceStart = StreamPosition.Start;
+            long sliceStart = StreamPosition.Start;
             var deserializedEvents = new List<object>();
             StreamEventsSlice slice;
 

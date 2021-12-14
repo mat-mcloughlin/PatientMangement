@@ -9,7 +9,7 @@ namespace PatientManagement.Framework.Helpers
         public static object Deserialize(this ResolvedEvent resolvedEvent)
         {
             return JsonConvert
-                 .DeserializeObject(Encoding.UTF8.GetString(resolvedEvent.Event.Data), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
+                 .DeserializeObject(Encoding.UTF8.GetString(resolvedEvent.Event.Data), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects })!;
         }
 
         public static byte[] Serialize(this object e)

@@ -5,7 +5,7 @@ namespace PatientManagement.AdmissionDischargeTransfer
 {
     public class Encounter : AggregateRoot
     {
-        string _patientName;
+        string _patientName = default!;
 
         int _ageInYears;
 
