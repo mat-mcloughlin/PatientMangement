@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using RandomNameGenerator;
+using Bogus;
+using Bogus.DataSets;
 
 namespace SeedGenerator
 {
@@ -8,27 +9,20 @@ namespace SeedGenerator
     {
         public static List<Patient> Generate(int number)
         {
-            var list = new List<Patient>();
-            var dateRandom = new Random();
+            var testOrders = new Faker<Patient>()
+                .StrictMode(true)
+                .RuleFor(o => o.Id, _ => Guid.NewGuid())
+                .RuleFor(o => o.Name, f => f.Name.FullName(f.PickRandom<Name.Gender>()))
+                .RuleFor(o => o.BirthDate, f => f.Date.Past(100));
 
-            for (var i = 0; i < number; i++)
-            {
-                list.Add(new Patient
-                {
-                    Id = Guid.NewGuid(),
-                    Name = i % 2 == 0 ? NameGenerator.Generate(Gender.Female) : NameGenerator.Generate(Gender.Male),
-                    BirthDate = DateTime.UtcNow.AddDays(dateRandom.Next(25550) * -1).Date
-                });
-            }
-
-            return list;
+            return testOrders.Generate(number);
         }
 
         public Guid Id { get; set; }
 
         public DateTime BirthDate { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
         public int Age => DateTime.UtcNow.Year - BirthDate.Year;
     }
