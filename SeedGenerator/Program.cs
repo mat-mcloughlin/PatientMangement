@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using PatientManagement.AdmissionDischargeTransfer.Commands;
@@ -35,7 +34,7 @@ async Task DischargePatients(IEnumerable<Patient> listOfPatients, Dispatcher dis
             await dispatcher.Dispatch(new DischargePatient(patient.Id));
         }
 
-        Console.WriteLine($"Discharging: {patient.Name}");
+        Console.WriteLine($"Discharging: {patient.Name} ({patient.Id})");
     }
 }
 
@@ -45,7 +44,7 @@ async Task DischargeAllPatients(IEnumerable<Patient> listOfPatients, Dispatcher 
     {
         await dispatcher.Dispatch(new DischargePatient(patient.Id));
 
-        Console.WriteLine($"Discharging: {patient.Name}");
+        Console.WriteLine($"Discharging: {patient.Name} ({patient.Id})");
     }
 }
 
@@ -59,7 +58,7 @@ async Task TransferPatients(List<Patient> listOfPatients, Dispatcher dispatcher)
             if (!transfer) continue;
             
             await dispatcher.Dispatch(new TransferPatient(patient.Id, Ward.Get()));
-            Console.WriteLine($"Transferring: {patient.Name}");
+            Console.WriteLine($"Transferring: {patient.Name} ({patient.Id})");
         }
     }
 }
@@ -74,15 +73,15 @@ async Task AdmitPatients(IEnumerable<Patient> listOfPatients, Dispatcher dispatc
             patient.Age,
             DateTime.UtcNow,
             Ward.Get()));
-        Console.WriteLine($"Admitting: {patient.Name}");
+        Console.WriteLine($"Admitting: {patient.Name} ({patient.Id})");
     }
 }
 
 async Task<Dispatcher> SetupDispatcher()
 {
-    var eventStoreConnection = EventStoreConnection.Create(
-        ConnectionSettings.Default,
-        new IPEndPoint(IPAddress.Loopback, 1113));
+    const string connectionString = 
+        "ConnectTo=tcp://localhost:1113;UseSslConnection=false;DefaultCredentials=admin:changeit";
+    var eventStoreConnection = EventStoreConnection.Create(connectionString);
 
     await eventStoreConnection.ConnectAsync();
     var repository = new AggregateRepository(eventStoreConnection);

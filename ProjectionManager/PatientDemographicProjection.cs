@@ -13,24 +13,21 @@ internal class PatientDemographicProjection : Projection
         {
             var rangeLookup = RangeLookup.Get(e.AgeInYears);
 
-            using (var session = connectionFactory.Connect())
+            using var session = connectionFactory.Connect();
+            var range = session.Load<Range>(rangeLookup.Name);
+
+            if (range == null)
             {
-                var range = session.Load<Range>(rangeLookup.Name);
-
-                if (range == null)
-                {
-                    session.Store(new Range {Id = rangeLookup.Name, Count = 1});
-                    Console.WriteLine($"{rangeLookup.Name}: 1");
-                }
-                else
-                {
-                    range.Count++;
-                    Console.WriteLine($"{rangeLookup.Name}: {range.Count}");
-
-                }
-
-                session.SaveChanges();
+                session.Store(new Range {Id = rangeLookup.Name, Count = 1});
+                Console.WriteLine($"{rangeLookup.Name}: 1");
             }
+            else
+            {
+                range.Count++;
+                Console.WriteLine($"{rangeLookup.Name}: {range.Count}");
+            }
+
+            session.SaveChanges();
         });
     }
 }

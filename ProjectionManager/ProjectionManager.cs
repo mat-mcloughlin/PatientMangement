@@ -39,7 +39,13 @@ class ProjectionManager
             checkpoint,
             CatchUpSubscriptionSettings.Default,
             EventAppeared(projection),
-            LiveProcessingStarted(projection));
+            LiveProcessingStarted(projection),
+            ConnectionDropped(projection));
+    }
+
+    private Action<EventStoreCatchUpSubscription, SubscriptionDropReason, Exception> ConnectionDropped(IProjection projection)
+    {
+        return (_, reason, exc) => Console.WriteLine($"Projection {projection.GetType().Name} dropped with {reason}, Exception: {exc.Message} {exc.StackTrace}");
     }
 
     Action<EventStoreCatchUpSubscription> LiveProcessingStarted(IProjection projection)
@@ -65,42 +71,38 @@ class ProjectionManager
 
     Position? GetPosition(Type projection)
     {
-        using (var session = _connectionFactory.Connect())
+        using var session = _connectionFactory.Connect();
+        var state = session.Load<ProjectionState>(projection.Name);
+
+        if (state == null)
         {
-            var state = session.Load<ProjectionState>(projection.Name);
-
-            if (state == null)
-            {
-                return null;
-            }
-
-            return new Position(state.CommitPosition, state.PreparePosition);
+            return null;
         }
+
+        return new Position(state.CommitPosition, state.PreparePosition);
     }
 
     void UpdatePosition(Type projection, Position position)
     {
-        using (var session = _connectionFactory.Connect())
+        using var session = _connectionFactory.Connect();
+        var state = session.Load<ProjectionState>(projection.Name);
+
+        if (state == null)
         {
-            var state = session.Load<ProjectionState>(projection.Name);
-
-            if (state == null)
+            session.Store(new ProjectionState
             {
-                session.Store(new ProjectionState
-                {
-                    Id = projection.Name,
-                    CommitPosition = position.CommitPosition,
-                    PreparePosition = position.PreparePosition
-                });
-            }
-            else
-            {
-                state.CommitPosition = position.CommitPosition;
-                state.PreparePosition = position.PreparePosition;
-            }
-
-            session.SaveChanges();
+                Id = projection.Name,
+                CommitPosition = position.CommitPosition,
+                PreparePosition = position.PreparePosition
+            });
         }
+        else
+        {
+            state.CommitPosition = position.CommitPosition;
+            state.PreparePosition = position.PreparePosition;
+        }
+
+        session.SaveChanges();
     }
 }
 

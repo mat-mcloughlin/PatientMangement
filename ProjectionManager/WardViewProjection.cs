@@ -9,43 +9,37 @@ internal class WardViewProjection : Projection
     {
         When<PatientAdmitted>(e =>
         {
-            using (var session = connectionFactory.Connect())
+            using var session = connectionFactory.Connect();
+            session.Store(new Patient
             {
-                session.Store(new Patient
-                {
-                    Id = e.PatientId,
-                    WardNumber = e.WardNumber,
-                    PatientName = e.PatientName,
-                    AgeInYears = e.AgeInYears
-                });
+                Id = e.PatientId.ToString(),
+                WardNumber = e.WardNumber,
+                PatientName = e.PatientName,
+                AgeInYears = e.AgeInYears
+            });
 
-                session.SaveChanges();
-            }
+            session.SaveChanges();
 
             Console.WriteLine($"Recording Patient Admission: {e.PatientName}");
         });
 
         When<PatientTransfered>(e =>
         {
-            using (var session = connectionFactory.Connect())
-            {
-                var patient = session.Load<Patient>(e.PatientId.ToString());
-                patient.WardNumber = e.WardNumber;
-                session.SaveChanges();
-            }
+            using var session = connectionFactory.Connect();
+            var patient = session.Load<Patient>(e.PatientId.ToString());
+            patient.WardNumber = e.WardNumber;
+            session.SaveChanges();
 
             Console.WriteLine($"Recording Patient Transfer: {e.PatientId}");
         });
 
         When<PatientDischarged>(e =>
         {
-            using (var session = connectionFactory.Connect())
-            {
-                var patient = session.Load<Patient>(e.PatientId.ToString());
-                session.Delete(patient);
+            using var session = connectionFactory.Connect();
+            var patient = session.Load<Patient>(e.PatientId.ToString());
+            session.Delete(patient);
 
-                session.SaveChanges();
-            }
+            session.SaveChanges();
 
             Console.WriteLine($"Recording Patient Discharged: {e.PatientId}");
         });
@@ -54,7 +48,7 @@ internal class WardViewProjection : Projection
 
 public class Patient
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = default!;
 
     public int WardNumber { get; set; }
 
