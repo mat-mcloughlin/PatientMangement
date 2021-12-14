@@ -29,7 +29,7 @@ namespace ProjectionManager
             {
                 using (var session = connectionFactory.Connect())
                 {
-                    var patient = session.Load<Patient>(e.PatientId);
+                    var patient = session.Load<Patient>(e.PatientId.ToString());
                     patient.WardNumber = e.WardNumber;
                     session.SaveChanges();
                 }
@@ -41,7 +41,7 @@ namespace ProjectionManager
             {
                 using (var session = connectionFactory.Connect())
                 {
-                    var patient = session.Load<Patient>(e.PatientId);
+                    var patient = session.Load<Patient>(e.PatientId.ToString());
                     session.Delete(patient);
 
                     session.SaveChanges();
@@ -58,7 +58,7 @@ namespace ProjectionManager
 
         public int WardNumber { get; set; }
 
-        public string PatientName { get; set; }
+        public string PatientName { get; set; } = default!;
 
         public int AgeInYears { get; set; }
     }

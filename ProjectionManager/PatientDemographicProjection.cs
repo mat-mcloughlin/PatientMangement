@@ -49,7 +49,7 @@ namespace ProjectionManager
             new RangeLookup { Name = "71+", Min = 71, Max = int.MaxValue }
         };
 
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
         public int Min { get; set; }
 
@@ -63,7 +63,7 @@ namespace ProjectionManager
 
     public class Range
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = default!;
 
         public int Count { get; set; }
     }
