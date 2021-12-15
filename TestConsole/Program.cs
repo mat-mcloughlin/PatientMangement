@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using EventStore.Client;
 using EventStore.ClientAPI;
 using PatientManagement.AdmissionDischargeTransfer.Commands;
 using PatientManagement.Framework;
 using PatientManagement.Framework.Commands;
 using ProjectionManager;
+
+var ct = new CancellationTokenSource().Token;
 
 var eventStoreConnection = GetEventStoreConnection();
 var eventStore = GetEventStore();
@@ -15,16 +18,16 @@ var connectionFactory = new ConnectionFactory("PatientManagement");
 var patientId = Guid.NewGuid();
 
 var admitPatient = new AdmitPatient(patientId, "Tony Ferguson", 32, DateTime.UtcNow, 10);
-await dispatcher.Dispatch(admitPatient);
+await dispatcher.Dispatch(admitPatient, ct);
 
 var transferPatientOne = new TransferPatient(patientId, 76);
-await dispatcher.Dispatch(transferPatientOne);
+await dispatcher.Dispatch(transferPatientOne, ct);
 
 var transferPatientTwo = new TransferPatient(patientId, 34);
-await dispatcher.Dispatch(transferPatientTwo);
+await dispatcher.Dispatch(transferPatientTwo, ct);
 
 var dischargePatient = new DischargePatient(patientId);
-await dispatcher.Dispatch(dischargePatient);
+await dispatcher.Dispatch(dischargePatient, ct);
 
 var projections = new List<IProjection>
 {
