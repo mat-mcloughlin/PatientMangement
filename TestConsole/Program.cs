@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using EventStore.Client;
 using EventStore.ClientAPI;
 using PatientManagement.AdmissionDischargeTransfer.Commands;
 using PatientManagement.Framework;
@@ -7,7 +8,8 @@ using PatientManagement.Framework.Commands;
 using ProjectionManager;
 
 var eventStoreConnection = GetEventStoreConnection();
-var dispatcher = SetupDispatcher(eventStoreConnection);
+var eventStore = GetEventStore();
+var dispatcher = SetupDispatcher(eventStore);
 var connectionFactory = new ConnectionFactory("PatientManagement");
 
 var patientId = Guid.NewGuid();
@@ -51,9 +53,16 @@ IEventStoreConnection GetEventStoreConnection()
     return eventStoreConnection;
 }
 
-Dispatcher SetupDispatcher(IEventStoreConnection eventStoreConnection)
+EventStoreClient GetEventStore()
 {
-    var repository = new AggregateRepository(eventStoreConnection);
+    const string connectionString = 
+        "esdb://localhost:2113?tls=false";
+    return new EventStoreClient(EventStoreClientSettings.Create(connectionString));
+}
+
+Dispatcher SetupDispatcher(EventStoreClient eventStore)
+{
+    var repository = new AggregateRepository(eventStore);
 
     var commandHandlerMap = new CommandHandlerMap(new Handlers(repository));
 

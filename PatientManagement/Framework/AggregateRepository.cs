@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EventStore.ClientAPI;
+using EventStore.Client;
 using PatientManagement.Framework.Helpers;
+using EventData = EventStore.Client.EventData;
 
 namespace PatientManagement.Framework;
 
 public class AggregateRepository
 {
-    readonly IEventStoreConnection _connection;
+    readonly EventStoreClient _eventStore;
 
-    public AggregateRepository(IEventStoreConnection connection)
+    public AggregateRepository(EventStoreClient eventStore)
     {
-        _connection = connection;
+        _eventStore = eventStore;
     }
 
     public async Task<T> Get<T>(Guid id) where T : IAggregateRoot
@@ -33,38 +34,37 @@ public class AggregateRepository
             .GetEvents()
             .Select(ToEventData);
 
-        return _connection.AppendToStreamAsync(StreamName(aggregateRoot.GetType(), aggregateRoot.Id), aggregateRoot.Version, events);
+        return _eventStore.AppendToStreamAsync(
+            StreamName(aggregateRoot.GetType(), aggregateRoot.Id), 
+            StreamRevision.FromInt64(aggregateRoot.Version), 
+            events
+        );
     }
 
     static EventData ToEventData(object e)
     {
         return new EventData(
-            Guid.NewGuid(),
+            Uuid.NewUuid(),
             e.GetType().Name,
-            true,
-            e.Serialize(),
-            null);
+            e.Serialize()
+        );
     }
 
     static string StreamName(Type aggregate, Guid id)
     {
-        return $"{aggregate.Name}+{id}";
+        return $"{aggregate.Name}-{id}";
     }
 
-    async Task<List<object>> GetEvents(string streamName)
+    async ValueTask<List<object>> GetEvents(string streamName)
     {
-        long sliceStart = StreamPosition.Start;
-        var deserializedEvents = new List<object>();
-        StreamEventsSlice slice;
+        await using var readResult = _eventStore.ReadStreamAsync(
+            Direction.Forwards,
+            streamName,
+            StreamPosition.Start
+        );
 
-        do
-        {
-            slice = await _connection.ReadStreamEventsForwardAsync(streamName, sliceStart, 200, false);
-            deserializedEvents.AddRange(slice.Events.Select(e => e.Deserialize()));
-            sliceStart = slice.NextEventNumber;
-
-        } while (!slice.IsEndOfStream);
-
-        return deserializedEvents;
+        return await readResult
+            .Select(@event => @event.Deserialize())
+            .ToListAsync();
     }
 }

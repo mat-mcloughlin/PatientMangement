@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EventStore.ClientAPI;
+using EventStore.Client;
 using PatientManagement.AdmissionDischargeTransfer.Commands;
 using PatientManagement.Framework;
 using PatientManagement.Framework.Commands;
@@ -11,7 +11,7 @@ var random = new Random();
 
 var listOfPatients = Patient.Generate(400);
 
-var dispatcher = await SetupDispatcher();
+var dispatcher = SetupDispatcher();
 
 await AdmitPatients(listOfPatients, dispatcher);
 await TransferPatients(listOfPatients, dispatcher);
@@ -77,14 +77,13 @@ async Task AdmitPatients(IEnumerable<Patient> listOfPatients, Dispatcher dispatc
     }
 }
 
-async Task<Dispatcher> SetupDispatcher()
+Dispatcher SetupDispatcher()
 {
     const string connectionString = 
-        "ConnectTo=tcp://localhost:1113;UseSslConnection=false;DefaultCredentials=admin:changeit";
-    var eventStoreConnection = EventStoreConnection.Create(connectionString);
+        "esdb://localhost:2113?tls=false";
+    var eventStore = new EventStoreClient(EventStoreClientSettings.Create(connectionString));
 
-    await eventStoreConnection.ConnectAsync();
-    var repository = new AggregateRepository(eventStoreConnection);
+    var repository = new AggregateRepository(eventStore);
 
     var commandHandlerMap = new CommandHandlerMap(new Handlers(repository));
 
