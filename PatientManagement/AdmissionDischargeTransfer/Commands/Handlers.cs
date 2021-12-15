@@ -7,26 +7,26 @@ public class Handlers : CommandHandler
 {
     public Handlers(AggregateRepository repository)
     {
-        Register<AdmitPatient>(async c =>
+        Register<AdmitPatient>(async (command, ct) =>
         {
-            var (patientId, patientName, ageInYears, _, wardNumber) = c;
+            var (patientId, patientName, ageInYears, _, wardNumber) = command;
             var encounter = new Encounter(patientId, patientName, ageInYears, wardNumber);
-            await repository.Save(encounter);
+            await repository.SaveAsync(encounter, ct);
         });
 
-        Register<TransferPatient>(async c =>
+        Register<TransferPatient>(async (command, ct) =>
         {
-            var (patientId, wardNumber) = c;
-            var encounter = await repository.Get<Encounter>(patientId);
+            var (patientId, wardNumber) = command;
+            var encounter = await repository.GetAsync<Encounter>(patientId, ct);
             encounter.Transfer(wardNumber);
-            await repository.Save(encounter);
+            await repository.SaveAsync(encounter, ct);
         });
 
-        Register<DischargePatient>(async c =>
+        Register<DischargePatient>(async (command, ct) =>
         {
-            var encounter = await repository.Get<Encounter>(c.PatientId);
+            var encounter = await repository.GetAsync<Encounter>(command.PatientId, ct);
             encounter.DischargePatient();
-            await repository.Save(encounter);
+            await repository.SaveAsync(encounter, ct);
         });
     }
 }

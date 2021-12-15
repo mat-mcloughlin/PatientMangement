@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PatientManagement.Framework.Commands;
 
 public class CommandHandlerMap
 {
-    private readonly Dictionary<string, Func<object, Task>> _handlers = new Dictionary<string, Func<object, Task>>();
+    private readonly Dictionary<string, Func<object, CancellationToken, Task>> _handlers = new();
 
     public CommandHandlerMap(params CommandHandler[] commandHandlers)
     {
@@ -17,7 +18,7 @@ public class CommandHandlerMap
         }
     }
 
-    public Func<object, Task> Get(object command)
+    public Func<object, CancellationToken, Task> Get(object command)
     {
         return _handlers[command.GetType().Name];
     }
