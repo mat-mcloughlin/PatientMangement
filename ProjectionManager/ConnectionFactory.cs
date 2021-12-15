@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Operations;
 using Raven.Client.Documents.Session;
@@ -23,39 +25,34 @@ public class ConnectionFactory
 
         _store.Initialize();
         
-        EnsureDatabaseExists(_store, database);
     }
 
-    public IDocumentSession Connect()
+    public IAsyncDocumentSession  Connect()
     {
-        return _store.OpenSession();
+        return _store.OpenAsyncSession();
     }
 
-    private static void EnsureDatabaseExists(IDocumentStore store, string? database = null, bool createDatabaseIfNotExists = true)
+    public async Task EnsureDatabaseExistsAsync(CancellationToken ct)
     {
-        database ??= store.Database;
+        var database = _store.Database;
 
         if (string.IsNullOrWhiteSpace(database))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(database));
 
         try
         {
-            store.Maintenance.ForDatabase(database).Send(new GetStatisticsOperation());
+            await _store.Maintenance.ForDatabase(database).SendAsync(new GetStatisticsOperation(), ct);
         }
         catch (DatabaseDoesNotExistException)
         {
-            if (createDatabaseIfNotExists == false)
-                throw;
-
             try
             {
-                store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(database)));
+                await _store.Maintenance.Server.SendAsync(new CreateDatabaseOperation(new DatabaseRecord(database)), ct);
             }
             catch (ConcurrencyException)
             {
                 // The database was already created before calling CreateDatabaseOperation
             }
-
         }
     }
 }

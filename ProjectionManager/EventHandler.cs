@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProjectionManager;
 
 record EventHandler(
     string EventType,
-    Action<object> Handler
+    Func<object, CancellationToken, Task> Handler
 );

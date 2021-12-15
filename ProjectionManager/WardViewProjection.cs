@@ -7,39 +7,39 @@ public class WardViewProjection : Projection
 {
     public WardViewProjection(ConnectionFactory connectionFactory)
     {
-        When<PatientAdmitted>(e =>
+        When<PatientAdmitted>(async (e, ct) =>
         {
             using var session = connectionFactory.Connect();
-            session.Store(new Patient
+            await session.StoreAsync(new Patient
             {
                 Id = e.PatientId.ToString(),
                 WardNumber = e.WardNumber,
                 PatientName = e.PatientName,
                 AgeInYears = e.AgeInYears
-            });
+            }, ct);
 
-            session.SaveChanges();
+            await session.SaveChangesAsync(ct);
 
             Console.WriteLine($"Recording Patient Admission: {e.PatientName}");
         });
 
-        When<PatientTransfered>(e =>
+        When<PatientTransfered>(async (e, ct) =>
         {
             using var session = connectionFactory.Connect();
-            var patient = session.Load<Patient>(e.PatientId.ToString());
+            var patient = await session.LoadAsync<Patient>(e.PatientId.ToString(), ct);
             patient.WardNumber = e.WardNumber;
-            session.SaveChanges();
+            await session.SaveChangesAsync(ct);
 
             Console.WriteLine($"Recording Patient Transfer: {e.PatientId}");
         });
 
-        When<PatientDischarged>(e =>
+        When<PatientDischarged>(async (e, ct) =>
         {
             using var session = connectionFactory.Connect();
-            var patient = session.Load<Patient>(e.PatientId.ToString());
+            var patient = await session.LoadAsync<Patient>(e.PatientId.ToString(), ct);
             session.Delete(patient);
 
-            session.SaveChanges();
+            await session.SaveChangesAsync(ct);
 
             Console.WriteLine($"Recording Patient Discharged: {e.PatientId}");
         });

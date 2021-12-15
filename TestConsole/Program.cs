@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using EventStore.Client;
-using EventStore.ClientAPI;
 using PatientManagement.AdmissionDischargeTransfer.Commands;
 using PatientManagement.Framework;
 using PatientManagement.Framework.Commands;
@@ -10,10 +9,10 @@ using ProjectionManager;
 
 var ct = new CancellationTokenSource().Token;
 
-var eventStoreConnection = GetEventStoreConnection();
 var eventStore = GetEventStore();
 var dispatcher = SetupDispatcher(eventStore);
 var connectionFactory = new ConnectionFactory("PatientManagement");
+await connectionFactory.EnsureDatabaseExistsAsync(ct);
 
 var patientId = Guid.NewGuid();
 
@@ -36,25 +35,15 @@ var projections = new List<IProjection>
 };
 
 var projectionManager = new ProjectionManager.ProjectionManager(
-    eventStoreConnection,
+    eventStore,
     connectionFactory,
     projections);
 
-projectionManager.Start();
+await projectionManager.StartAsync(ct);
 
 Console.WriteLine("Projection Manager Running");
 
 Console.ReadLine();
-
-IEventStoreConnection GetEventStoreConnection()
-{
-    const string connectionString = 
-        "ConnectTo=tcp://localhost:1113;UseSslConnection=false;DefaultCredentials=admin:changeit";
-    var eventStoreConnection = EventStoreConnection.Create(connectionString);
-
-    eventStoreConnection.ConnectAsync().Wait();
-    return eventStoreConnection;
-}
 
 EventStoreClient GetEventStore()
 {

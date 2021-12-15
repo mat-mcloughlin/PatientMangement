@@ -9,16 +9,16 @@ public class PatientDemographicProjection : Projection
 {
     public PatientDemographicProjection(ConnectionFactory connectionFactory)
     {
-        When<PatientAdmitted>(e =>
+        When<PatientAdmitted>(async (e, ct) =>
         {
             var rangeLookup = RangeLookup.Get(e.AgeInYears);
 
             using var session = connectionFactory.Connect();
-            var range = session.Load<Range>(rangeLookup.Name);
+            var range = await session.LoadAsync<Range>(rangeLookup.Name, ct);
 
             if (range == null)
             {
-                session.Store(new Range {Id = rangeLookup.Name, Count = 1});
+                await session.StoreAsync(new Range {Id = rangeLookup.Name, Count = 1}, ct);
                 Console.WriteLine($"{rangeLookup.Name}: 1");
             }
             else
@@ -27,7 +27,7 @@ public class PatientDemographicProjection : Projection
                 Console.WriteLine($"{rangeLookup.Name}: {range.Count}");
             }
 
-            session.SaveChanges();
+            await session.SaveChangesAsync(ct);
         });
     }
 }

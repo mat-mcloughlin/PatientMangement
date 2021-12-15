@@ -1,8 +1,11 @@
-﻿namespace ProjectionManager;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace ProjectionManager;
 
 public interface IProjection
 {
     bool CanHandle(string eventType);
 
-    void Handle(string eventType, object e);
+    Task HandleAsync(string eventType, object e, CancellationToken ct);
 }
