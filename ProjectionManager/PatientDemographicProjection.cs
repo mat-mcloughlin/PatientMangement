@@ -5,7 +5,7 @@ using PatientManagement.AdmissionDischargeTransfer;
 
 namespace ProjectionManager;
 
-internal class PatientDemographicProjection : Projection
+public class PatientDemographicProjection : Projection
 {
     public PatientDemographicProjection(ConnectionFactory connectionFactory)
     {

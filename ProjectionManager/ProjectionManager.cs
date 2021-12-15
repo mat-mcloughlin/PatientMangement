@@ -5,13 +5,21 @@ using PatientManagement.Framework.Helpers;
 
 namespace ProjectionManager;
 
-class ProjectionManager
+public class ProjectionManager
 {
     readonly IEventStoreConnection _eventStoreConnection;
 
     readonly List<IProjection> _projections;
 
     readonly ConnectionFactory _connectionFactory;
+    
+    readonly CatchUpSubscriptionSettings defaultSettings = new(
+        10000,
+        500,
+        false,
+        false,
+        string.Empty
+    );
 
     public ProjectionManager(
         IEventStoreConnection eventStoreConnection,
@@ -34,10 +42,10 @@ class ProjectionManager
     void StartProjection(IProjection projection)
     {
         var checkpoint = GetPosition(projection.GetType());
-
+        
         _eventStoreConnection.SubscribeToAllFrom(
             checkpoint,
-            CatchUpSubscriptionSettings.Default,
+            defaultSettings,
             EventAppeared(projection),
             LiveProcessingStarted(projection),
             ConnectionDropped(projection));
@@ -57,6 +65,9 @@ class ProjectionManager
     {
         return (s, e) =>
         {
+            Console.WriteLine(
+                $"Handling Projection {projection.GetType().Name} event {e.Event.EventType} id: {e.Event.EventId}");
+            
             if (!projection.CanHandle(e.Event.EventType))
             {
                 return;

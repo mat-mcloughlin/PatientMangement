@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PatientManagement\PatientManagement.csproj" />
+    <ProjectReference Include="..\ProjectionManager\ProjectionManager.csproj" />
   </ItemGroup>
 
 </Project>

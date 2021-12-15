@@ -1,6 +1,6 @@
 ﻿namespace ProjectionManager;
 
-interface IProjection
+public interface IProjection
 {
     bool CanHandle(string eventType);
 

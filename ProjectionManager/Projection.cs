@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ProjectionManager;
 
-class Projection : IProjection
+public class Projection : IProjection
 {
     readonly List<EventHandler> _handlers = new();
 

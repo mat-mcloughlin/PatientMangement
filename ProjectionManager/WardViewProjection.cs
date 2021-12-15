@@ -3,7 +3,7 @@ using PatientManagement.AdmissionDischargeTransfer;
 
 namespace ProjectionManager;
 
-internal class WardViewProjection : Projection
+public class WardViewProjection : Projection
 {
     public WardViewProjection(ConnectionFactory connectionFactory)
     {
