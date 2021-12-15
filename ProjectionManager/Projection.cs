@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProjectionManager;
 
@@ -8,17 +10,20 @@ public class Projection : IProjection
 {
     readonly List<EventHandler> _handlers = new();
 
-    protected void When<T>(Action<T> when)
+    protected void When<T>(Func<T, CancellationToken, Task> when)
     {
-        _handlers.Add(new EventHandler(typeof(T).Name, e => when((T)e)));
+        _handlers.Add(new EventHandler(typeof(T).Name, (e, ct) => when((T)e, ct)));
     }
 
-    void IProjection.Handle(string eventType, object e)
+    async Task IProjection.HandleAsync(string eventType, object e, CancellationToken ct)
     {
-        _handlers
-            .Where(h => h.EventType == eventType)
-            .ToList()
-            .ForEach(h => h.Handler(e));
+
+        foreach (var handle in _handlers
+                     .Where(h => h.EventType == eventType)
+                     .Select(h => h.Handler(e, ct)))
+        {
+            await handle;
+        }
     }
 
     bool IProjection.CanHandle(string eventType)
