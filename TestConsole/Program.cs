@@ -1,55 +1,61 @@
 ﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using EventStore.ClientAPI;
 using PatientManagement.AdmissionDischargeTransfer.Commands;
 using PatientManagement.Framework;
 using PatientManagement.Framework.Commands;
+using ProjectionManager;
 
-namespace TestConsole
+var eventStoreConnection = GetEventStoreConnection();
+var dispatcher = SetupDispatcher(eventStoreConnection);
+var connectionFactory = new ConnectionFactory("PatientManagement");
+
+var patientId = Guid.NewGuid();
+
+var admitPatient = new AdmitPatient(patientId, "Tony Ferguson", 32, DateTime.UtcNow, 10);
+await dispatcher.Dispatch(admitPatient);
+
+var transferPatientOne = new TransferPatient(patientId, 76);
+await dispatcher.Dispatch(transferPatientOne);
+
+var transferPatientTwo = new TransferPatient(patientId, 34);
+await dispatcher.Dispatch(transferPatientTwo);
+
+var dischargePatient = new DischargePatient(patientId);
+await dispatcher.Dispatch(dischargePatient);
+
+var projections = new List<IProjection>
 {
-    class Program
-    {
-        static void Main()
-        {
-            AsyncMain().GetAwaiter().GetResult();
-        }
+    new WardViewProjection(connectionFactory),
+    new PatientDemographicProjection(connectionFactory)
+};
 
-        static async Task AsyncMain()
-        {
-            var dispatcher = await SetupDispatcher();
+var projectionManager = new ProjectionManager.ProjectionManager(
+    eventStoreConnection,
+    connectionFactory,
+    projections);
 
-            var patientId = Guid.NewGuid();
+projectionManager.Start();
 
-            var admitPatient = new AdmitPatient(patientId, "Tony Ferguson", 32, DateTime.UtcNow, 10);
-            await dispatcher.Dispatch(admitPatient);
+Console.WriteLine("Projection Manager Running");
 
-            var transferPatientOne = new TransferPatient(patientId, 76);
-            await dispatcher.Dispatch(transferPatientOne);
+Console.ReadLine();
 
-            var transferPatientTwo = new TransferPatient(patientId, 34);
-            await dispatcher.Dispatch(transferPatientTwo);
+IEventStoreConnection GetEventStoreConnection()
+{
+    const string connectionString = 
+        "ConnectTo=tcp://localhost:1113;UseSslConnection=false;DefaultCredentials=admin:changeit";
+    var eventStoreConnection = EventStoreConnection.Create(connectionString);
 
-            var dischargePatient = new DischargePatient(patientId);
-            await dispatcher.Dispatch(dischargePatient);
+    eventStoreConnection.ConnectAsync().Wait();
+    return eventStoreConnection;
+}
 
+Dispatcher SetupDispatcher(IEventStoreConnection eventStoreConnection)
+{
+    var repository = new AggregateRepository(eventStoreConnection);
 
-            Console.ReadLine();
-        }
+    var commandHandlerMap = new CommandHandlerMap(new Handlers(repository));
 
-        private static async Task<Dispatcher> SetupDispatcher()
-        {
-            var eventStoreConnection = EventStoreConnection.Create(
-                ConnectionSettings.Default,
-                new IPEndPoint(IPAddress.Loopback, 1113));
-
-            await eventStoreConnection.ConnectAsync();
-            var repository = new AggregateRepository(eventStoreConnection);
-
-            var commandHandlerMap = new CommandHandlerMap(new Handlers(repository));
-
-            return new Dispatcher(commandHandlerMap);
-
-        }
-    }
+    return new Dispatcher(commandHandlerMap);
 }

@@ -1,26 +1,61 @@
-﻿using Raven.Client;
-using Raven.Client.Document;
+﻿using System;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Operations;
+using Raven.Client.Documents.Session;
+using Raven.Client.Exceptions;
+using Raven.Client.Exceptions.Database;
+using Raven.Client.ServerWide;
+using Raven.Client.ServerWide.Operations;
 
-namespace ProjectionManager
+namespace ProjectionManager;
+
+public class ConnectionFactory
 {
-    internal class ConnectionFactory
+    private readonly IDocumentStore _store;
+
+    public ConnectionFactory(string database)
     {
-        private readonly IDocumentStore _store;
-
-        public ConnectionFactory(string database)
+        _store = new DocumentStore
         {
-            _store = new DocumentStore
-            {
-                Url = "http://localhost:8080/",
-                DefaultDatabase = database
-            };
+            Urls = new [] { "http://localhost:8080/" },
+            Database = database
+        };
 
-            _store.Initialize();
+        _store.Initialize();
+        
+        EnsureDatabaseExists(_store, database);
+    }
+
+    public IDocumentSession Connect()
+    {
+        return _store.OpenSession();
+    }
+
+    private static void EnsureDatabaseExists(IDocumentStore store, string? database = null, bool createDatabaseIfNotExists = true)
+    {
+        database ??= store.Database;
+
+        if (string.IsNullOrWhiteSpace(database))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(database));
+
+        try
+        {
+            store.Maintenance.ForDatabase(database).Send(new GetStatisticsOperation());
         }
-
-        public IDocumentSession Connect()
+        catch (DatabaseDoesNotExistException)
         {
-            return _store.OpenSession();
+            if (createDatabaseIfNotExists == false)
+                throw;
+
+            try
+            {
+                store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(database)));
+            }
+            catch (ConcurrencyException)
+            {
+                // The database was already created before calling CreateDatabaseOperation
+            }
+
         }
     }
 }

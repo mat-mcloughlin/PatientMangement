@@ -4,12 +4,14 @@ This is very basic implementation of the CQRS and ES patterns that I used in my 
 
 To get it running you first need to install default installations of both
 
-- [EventStore](https://geteventstore.com/)
+- [EventStore](https://eventstore.com/)
 - [RavenDB](https://ravendb.net/)
 
-Both need to be running. RavenDB can be installed as a windows service. Event Store needs to be manually run from the console application with the command
+Both need to be running. You can use [Docker](https://www.docker.com/products/docker-desktop) to run databases using prepared Docker Compose configuration:
 
-    .\EventStore.ClusterNode.exe
+```shell
+docker-compose up
+```
 
 # Structure
 There are 4 projections 

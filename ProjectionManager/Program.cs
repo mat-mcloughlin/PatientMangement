@@ -1,47 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using EventStore.ClientAPI;
-using EventStore.ClientAPI.SystemData;
+using ProjectionManager;
 
-namespace ProjectionManager
+var eventStoreConnection = GetEventStoreConnection();
+
+var connectionFactory = new ConnectionFactory("PatientManagement");
+
+var projections = new List<IProjection>
 {
-    internal class Program
-    {
-        public static void Main(string[] args)
-        {
-            var eventStoreConnection = GetEventStoreConnection();
+    new WardViewProjection(connectionFactory),
+    new PatientDemographicProjection(connectionFactory)
+};
 
-            var connectionFactory = new ConnectionFactory("PatientManagement");
+var projectionManager = new ProjectionManager.ProjectionManager(
+    eventStoreConnection,
+    connectionFactory,
+    projections);
 
-            var projections = new List<IProjection>
-            {
-                new WardViewProjection(connectionFactory),
-                new PatientDemographicProjection(connectionFactory)
-            };
+projectionManager.Start();
 
-            var projectionManager = new ProjectionManager(
-                eventStoreConnection,
-                connectionFactory,
-                projections);
+Console.WriteLine("Projection Manager Running");
+Console.ReadLine();
 
-            projectionManager.Start();
+IEventStoreConnection GetEventStoreConnection()
+{
+    const string connectionString = 
+        "ConnectTo=tcp://localhost:1113;UseSslConnection=false;DefaultCredentials=admin:changeit";
+    eventStoreConnection = EventStoreConnection.Create(connectionString);
 
-            Console.WriteLine("Projection Manager Running");
-            Console.ReadLine();
-        }
-
-        static IEventStoreConnection GetEventStoreConnection()
-        {
-            ConnectionSettings settings = ConnectionSettings.Create()
-                .SetDefaultUserCredentials(new UserCredentials("admin", "changeit"));
-
-            var eventStoreConnection = EventStoreConnection.Create(
-                settings,
-                new IPEndPoint(IPAddress.Loopback, 1113));
-
-            eventStoreConnection.ConnectAsync().Wait();
-            return eventStoreConnection;
-        }
-    }
+    eventStoreConnection.ConnectAsync().Wait();
+    return eventStoreConnection;
 }

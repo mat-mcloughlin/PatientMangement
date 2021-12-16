@@ -1,0 +1,58 @@
+version: "3"
+services:
+  #######################################################
+  #  EventStoreDB - Event Store
+  #######################################################
+  eventstore.db:
+    image: eventstore/eventstore:21.10.0-buster-slim
+    # use this image if you're running ARM-based proc like Apple M1
+    # image: ghcr.io/eventstore/eventstore:21.10.0-alpha-arm64v8
+    environment:
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_EXT_TCP_PORT=1113
+      - EVENTSTORE_HTTP_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+    ports:
+      - '1113:1113'
+      - '2113:2113'
+    volumes:
+      - type: volume
+        source: eventstore-volume-data
+        target: /var/lib/eventstore
+      - type: volume
+        source: eventstore-volume-logs
+        target: /var/log/eventstore
+    networks:
+      - eventstore.db
+
+  #######################################################
+  #  RavenDB - Read models
+  #######################################################
+  raven.db:
+    container_name: raven_db
+    image: ravendb/ravendb:5.3-ubuntu-latest
+    environment:
+      - RAVEN_Security_UnsecuredAccessAllowed=PrivateNetwork
+      - RAVEN_Setup_Mode=None
+      - RAVEN_License_Eula_Accepted=true
+    volumes:
+      - ravendb-data:/opt/RavenDB/Server/RavenData
+    ports:
+      - "8080:8080"
+    networks:
+      - raven.db
+
+networks:
+  eventstore.db:
+    driver: bridge
+  raven.db:
+    driver: bridge
+
+volumes:
+  eventstore-volume-data:
+  eventstore-volume-logs:
+  ravendb-data:

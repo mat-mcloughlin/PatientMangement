@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PatientManagement.Framework
+namespace PatientManagement.Framework;
+
+public interface IAggregateRoot
 {
-    public interface IAggregateRoot
-    {
-        List<object> GetEvents();
+    List<object> GetEvents();
 
-        void ClearEvents();
+    void ClearEvents();
 
-        void Apply(object e);
+    void Apply(object e);
 
-        Guid Id { get; }
+    Guid Id { get; }
 
-        int Version { get; }
-    }
+    int Version { get; }
 }
